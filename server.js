@@ -7,8 +7,10 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const { Sequelize } = require('sequelize');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const knex = require('./config/connection'); 
 
-const { User, BlogPost, Comment } = require('./models'); // Update with your models
+
+const { User, BlogPost, Comment } = require('./models'); 
 const { withAuth } = require('./utils/auth');
 const { formatDate } = require('./utils/helper');
 const homeController = require('./controllers/homeController');
@@ -19,7 +21,7 @@ const PORT = process.env.PORT || 3001;
 
 // Sequelize connection
 const sequelize = new Sequelize({
-    dialect: 'mysql',
+    dialect: 'mysql2',
     host: 'localhost', 
     port: 3306, 
     username: 'root', 

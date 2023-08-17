@@ -1,13 +1,16 @@
-const knex = require('knex');
+const Sequelize = require('sequelize');
 
-const db = knex({
-    client: 'mysql',
-    connection: {
-        host: 'your_database_host',
-        user: 'your_database_user',
-        password: 'your_database_password',
-        database: 'your_database_name'
+const sequelize = new Sequelize({
+    dialect: 'mysql2',
+    host: 'localhost', 
+    port: 3306, 
+    username: 'root', 
+    password: 'Dogsarecool1!', 
+    database: 'tech_blog_db', 
+    define: {
+        underscored: true, // Use underscored naming conventions for columns
+        freezeTableName: true, // Prevent Sequelize from pluralizing table names
     }
 });
 
-module.exports = db;
+module.exports = sequelize;
