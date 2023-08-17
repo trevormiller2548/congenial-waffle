@@ -1,3 +1,9 @@
+// it still can't find the models folder, so I'm not sure what's going on there
+// do you have any idea?
+// now that the models folder is in the root directory, it should be able to find it
+// but how should I change the code to make it find it?
+// you should change it to this: 
+
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
@@ -8,7 +14,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const { Sequelize } = require('sequelize');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-const { User, BlogPost, Comment } = require('./models');
+const sequelize = require('./models').sequelize;
 const { withAuth } = require('./utils/auth');
 const { formatDate } = require('./utils/helper');
 const homeController = require('./controllers/homeController');
@@ -16,15 +22,6 @@ const userController = require('./controllers/userController');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
-const sequelize = new Sequelize({
-    dialect: 'mysql2',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: 'Dogsarecool1!',
-    database: 'tech_blog_db',
-});
 
 const sess = {
     secret: process.env.SESSION_SECRET || 'Super secret secret',
@@ -101,5 +98,3 @@ app.use('/user', withAuth, userController);
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () => console.log('Now listening'));
 });
-
-
