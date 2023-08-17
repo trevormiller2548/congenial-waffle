@@ -1,9 +1,3 @@
-// it still can't find the models folder, so I'm not sure what's going on there
-// do you have any idea?
-// now that the models folder is in the root directory, it should be able to find it
-// but how should I change the code to make it find it?
-// you should change it to this: 
-
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
