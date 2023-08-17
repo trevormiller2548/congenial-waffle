@@ -5,7 +5,7 @@ const sequelize = new Sequelize({
     host: 'localhost',
     port: 3306,
     username: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
+    password: process.env.DB_PASSWORD || 'Dogsarecool1!',
     database: process.env.DB_NAME || 'tech_blog_db',
 });
 

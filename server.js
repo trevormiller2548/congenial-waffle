@@ -8,7 +8,10 @@ const LocalStrategy = require('passport-local').Strategy;
 const { Sequelize } = require('sequelize');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-const sequelize = require('./models').sequelize;
+// Import models
+const BlogPost = require('./models/BlogPost'); // Import BlogPost model
+const Comment = require('./models/Comment');   // Import Comment model
+const User = require('./models/User');         // Import User model
 const { withAuth } = require('./utils/auth');
 const { formatDate } = require('./utils/helper');
 const homeController = require('./controllers/homeController');
