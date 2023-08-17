@@ -7,10 +7,10 @@ async function signupFormHandler(event) {
   const email = document.getElementById('email-signup').value;
   const password = document.getElementById('password-signup').value;
   const signupStatusEl = document.getElementById('signup-status');
-  
+
   if (username.length <= 4 || email.length <= 4 || password.length <= 4) {
-    // If any sign-up input value is under 4 characters, notify the user and restrict submission
-    signupStatusEl.textContent = 'Please make all inputs are filled with character count above 4';
+    // If any input value is under 4 characters, notify the user and restrict submission
+    signupStatusEl.textContent = 'Please fill in all fields with at least 4 characters';
     signupStatusEl.style.color = 'red';
 
     setTimeout(() => {
@@ -31,19 +31,16 @@ async function signupFormHandler(event) {
       },
     });
 
-    // If the response is OK, refresh the page and redirect to the dashboard
     if (response.ok) {
-      signupStatusEl.textContent = 'Sign-up successful, refreshing...';
+      signupStatusEl.textContent = 'Sign-up successful, redirecting...';
       signupStatusEl.style.color = 'green';
       setTimeout(() => {
         document.location.replace('/dashboard');
       }, 1250);
     } else {
-      // Otherwise, alert the user with the response status text
       alert(response.statusText);
     }
   }
 }
 
-// Add the event handler for the form submission
 signupForm.addEventListener('submit', signupFormHandler);

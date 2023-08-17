@@ -9,37 +9,38 @@ Comment.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
-            autoIncrement: true
+            autoIncrement: true,
         },
-        comment_text: {
-            type: DataTypes.STRING,
+        text: {
+            type: DataTypes.TEXT,
             allowNull: false,
-            validate: {
-                len: [1]
-            }
+        },
+        date: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            defaultValue: DataTypes.NOW,
         },
         user_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
             references: {
                 model: 'user',
-                key: 'id'
-            }
+                key: 'id',
+            },
         },
-        post_id: {
+        blogpost_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
             references: {
-                model: 'post',
-                key: 'id'
-            }
-        }
+                model: 'blogpost',
+                key: 'id',
+            },
+        },
     },
     {
         sequelize,
+        timestamps: false,
         freezeTableName: true,
         underscored: true,
-        modelName: 'comment'
+        modelName: 'comment',
     }
 );
 
