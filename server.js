@@ -23,7 +23,7 @@ const sequelize = new Sequelize({
     host: 'localhost', 
     port: 3306, 
     username: 'root', 
-    password: 'Dogsandchickens1991', 
+    password: 'Dogsarecool1!', 
     database: 'tech_blog_db', 
 });
 
