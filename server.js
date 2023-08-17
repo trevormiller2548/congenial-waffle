@@ -2,41 +2,54 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcrypt');
+const { Sequelize } = require('sequelize');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
 const { User, BlogPost, Comment } = require('./models'); // Update with your models
+const { withAuth } = require('./utils/auth');
+const { formatDate } = require('./utils/helper');
+const homeController = require('./controllers/homeController');
+const userController = require('./controllers/userController');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Sequelize connection
 const sequelize = new Sequelize({
-  dialect: 'mysql',
-  host: 'localhost', // Update with your DB host
-  port: 3306, // Update with your DB port
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+    dialect: 'mysql',
+    host: 'localhost', 
+    port: 3306, 
+    username: 'root', 
+    password: 'Dogsandchickens1991', 
+    database: 'tech_blog_db', 
 });
 
-const SequelizeStore = require('connect-session-sequelize')(session.Store);
-
 const sess = {
-  secret: process.env.SESSION_SECRET || 'Super secret secret',
-  cookie: { maxAge: 3600000 }, // Set session expiration (1 hour)
-  resave: false,
-  saveUninitialized: true,
-  store: new SequelizeStore({
-    db: sequelize,
-  }),
+    secret: 'Super secret secret', // Update with your session secret
+    cookie: { maxAge: 3600000 }, // Set session expiration (1 hour)
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+        db: sequelize,
+    }),
 };
 
 app.use(session(sess));
 
-const helpers = require('./utils/helpers');
-const hbs = exphbs.create({ helpers });
+const hbs = exphbs.create({
+    helpers: {
+        formatDate: (date) => {
+            const formattedDate = new Date(date);
+            const month = formattedDate.getMonth() + 1;
+            const day = formattedDate.getDate();
+            const year = formattedDate.getFullYear();
+            return `${month}/${day}/${year}`;
+        },
+    },
+});
 
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
@@ -46,46 +59,47 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Passport configuration
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const user = await User.findOne({ where: { username } });
+passport.use(
+    new LocalStrategy(async (username, password, done) => {
+        try {
+            const user = await User.findOne({ where: { username } });
 
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
+            if (!user) {
+                return done(null, false, { message: 'Incorrect username.' });
+            }
 
-      const passwordMatch = await bcrypt.compare(password, user.password);
+            const passwordMatch = await bcrypt.compare(password, user.password);
 
-      if (!passwordMatch) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
+            if (!passwordMatch) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
 
-      return done(null, user);
-    } catch (err) {
-      return done(err);
-    }
-  }
-));
+            return done(null, user);
+        } catch (err) {
+            return done(err);
+        }
+    })
+);
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+    done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findByPk(id);
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
+    try {
+        const user = await User.findByPk(id);
+        done(null, user);
+    } catch (err) {
+        done(err, null);
+    }
 });
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(require('./app/controllers')); // Update with your controllers
+app.use('/', homeController);
+app.use('/user', withAuth, userController);
 
 sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log('Now listening'));
+    app.listen(PORT, () => console.log('Now listening'));
 });
